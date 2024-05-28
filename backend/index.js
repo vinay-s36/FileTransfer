@@ -8,6 +8,8 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
+
 const upload = multer({ dest: 'uploads/' });
 
 const transporter = nodemailer.createTransport({
@@ -40,16 +42,17 @@ app.post('/upload', upload.single('file'), (req, res) => {
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
-    fs.unlink(file.path, (err) => {
-      if (err) {
-        console.log('Error deleting file:', err);
-      }
-    });
-
     if (error) {
-      console.log('Error sending email:', error);
+      console.error('Error sending email:', error);
       return res.status(500).send('Error sending email: ' + error.message);
     }
+
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+      }
+    });
+    
     res.status(200).send('File uploaded and email sent.');
   });
 });

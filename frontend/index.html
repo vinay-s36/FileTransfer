@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>File Upload</title>
+    <title>FileSend</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -74,14 +74,15 @@
               body: formData,
             });
             if (response.ok) {
-              alert("File uploaded successfully.");
+              alert("File sent successfully.");
             } else {
               const errorText = await response.text();
-              alert("Failed to upload file: " + errorText);
+              console.error("Failed to send file: " + errorText);
+              alert("Failed to send file: " + errorText);
             }
           } catch (error) {
-            alert("Error:", error);
-            alert("Failed to upload file.");
+            console.error("Failed to send file:", error);
+            alert("Failed to send file.");
           }
         });
     </script>
