@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FileSend</title>
+    <title>V-Tech - FileSend</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -62,27 +62,33 @@
       <button type="submit">Send</button>
     </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
       document
         .getElementById("uploadForm")
         .addEventListener("submit", async function (event) {
           event.preventDefault();
-          const formData = new FormData(this);
+          const formData = new FormData();
+
+          const fileInput = document.querySelector('input[type="file"]');
+          const emailInput = document.querySelector('input[type="email"]');
+
+          formData.append("file", fileInput.files[0]);
+          formData.append("email", emailInput.value);
+
           try {
-            const response = await fetch("http://127.0.0.1:3000/upload", {
-              method: "POST",
-              body: formData,
-            });
-            if (response.ok) {
-              alert("File sent successfully.");
-            } else {
-              const errorText = await response.text();
-              console.error("Failed to send file: " + errorText);
-              alert("Failed to send file: " + errorText);
-            }
+            const response = await axios.post(
+              "http://127.0.0.1:3000/upload",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
           } catch (error) {
-            console.error("Failed to send file:", error);
             alert("Failed to send file.");
+            location.reload();
           }
         });
     </script>

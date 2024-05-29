@@ -2,7 +2,7 @@
 const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
-const fs = require('fs');
+const fs = require('fs').promises;
 const cors = require('cors');
 require('dotenv').config();
 
@@ -16,11 +16,11 @@ const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const email = req.body.email;
 
@@ -36,25 +36,20 @@ app.post('/upload', upload.single('file'), (req, res) => {
     attachments: [
       {
         filename: file.originalname,
-        path: file.path
-      }
-    ]
+        path: file.path,
+      },
+    ],
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error sending email:', error);
-      return res.status(500).send('Error sending email: ' + error.message);
-    }
-
-    fs.unlink(file.path, (err) => {
-      if (err) {
-        console.error('Error deleting file:', err);
-      }
-    });
-    
-    res.status(200).send('File uploaded and email sent.');
-  });
+  try {
+    await transporter.sendMail(mailOptions);
+    await fs.unlink(file.path);
+    console.log('File uploaded and email sent.');
+    res.status(200).json('File uploaded and email sent.');
+  } catch (error) {
+    console.error('Error sending email or deleting file:', error);
+    res.status(500).json('Error sending email or deleting file: ' + error.message);
+  }
 });
 
 const PORT = process.env.PORT || 3000;
