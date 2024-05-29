@@ -20,6 +20,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+app.get('/',(req,res)=>{
+  res.send('V-Tech FileSend')
+});
+
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const email = req.body.email;
