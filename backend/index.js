@@ -2,8 +2,8 @@
 const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
-const fs = require('fs').promises;
 const cors = require('cors');
+const fs = require('fs').promises;
 require('dotenv').config();
 
 const app = express();
@@ -20,8 +20,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.get('/',(req,res)=>{
-  res.send('V-Tech FileSend')
+app.get('/', (req, res) => {
+  res.send('V-Tech FileSend');
 });
 
 app.post('/upload', upload.single('file'), async (req, res) => {
@@ -29,30 +29,29 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   const email = req.body.email;
 
   if (!file || !email) {
-    return res.status(400).send('File and email are required.');
+    return res.status(400).json({ error: 'File and email are required.' });
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Your uploaded file',
-    text: 'Here is your file.',
-    attachments: [
-      {
-        filename: file.originalname,
-        path: file.path,
-      },
-    ],
-  };
-
   try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your uploaded file',
+      text: 'Here is your file.',
+      attachments: [
+        {
+          filename: file.originalname,
+          path: file.path,
+        },
+      ],
+    };
+
     await transporter.sendMail(mailOptions);
-    await fs.unlink(file.path);
-    console.log('File uploaded and email sent.');
-    res.status(200).json('File uploaded and email sent.');
+    console.log('Email sent successfully');
+    res.status(200).json({ message: 'File uploaded and email sent.' });
   } catch (error) {
-    console.error('Error sending email or deleting file:', error);
-    res.status(500).json('Error sending email or deleting file: ' + error.message);
+    console.log('Error sending email:', error);
+    res.status(500).json({ error: 'Error sending email.' });
   }
 });
 

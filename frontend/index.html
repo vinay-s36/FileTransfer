@@ -62,7 +62,6 @@
       <button type="submit">Send</button>
     </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
       document
         .getElementById("uploadForm")
@@ -77,20 +76,22 @@
           formData.append("email", emailInput.value);
 
           try {
-            const response = await axios.post(
-              "https://filetransfer-111n.onrender.com/upload",
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
+            const response = await fetch("http://localhost:3000/upload", {
+              method: "POST",
+              body: formData,
+            });
+            const res = await response.json();
+            if (res.ok) {
+              alert("sent");
+              message.innerHTML = "File sent successfully";
+              message.style.display = "block";
+            } else {
+              alert("unsent");
+              message.innerHTML = "Failed to send file";
+            }
           } catch (error) {
-            alert("Failed to send file.");
-            location.reload();
+            alert("Error:", error);
           }
-          location.reload();
         });
     </script>
   </body>
