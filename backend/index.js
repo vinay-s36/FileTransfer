@@ -3,7 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-const fs = require('fs').promises;
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -47,10 +47,16 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+
+    // Delete the file after sending the email
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error('Failed to delete file:', err);
+      }
+    });
+
     res.status(200).json({ message: 'File uploaded and email sent.' });
   } catch (error) {
-    console.log('Error sending email:', error);
     res.status(500).json({ error: 'Error sending email.' });
   }
 });
