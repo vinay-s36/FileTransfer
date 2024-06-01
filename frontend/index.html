@@ -3,96 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>V-Tech - FileSend</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      form {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        width: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-      }
-      input[type="file"],
-      input[type="email"],
-      button {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
-      }
-      input[type="file"] {
-        cursor: pointer;
-      }
-      button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      button:hover {
-        background-color: #0056b3;
-      }
-      input[type="email"]::placeholder {
-        color: #888;
-      }
-    </style>
+    <title>V-Tech ● FileSend</title>
   </head>
   <body>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <input type="file" name="file" required />
-      <input
-        type="email"
-        name="email"
-        placeholder="Enter your email"
-        required
-      />
-      <button type="submit">Send</button>
-    </form>
-
-    <script>
-      document
-        .getElementById("uploadForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const formData = new FormData();
-
-          const fileInput = document.querySelector('input[type="file"]');
-          const emailInput = document.querySelector('input[type="email"]');
-
-          formData.append("file", fileInput.files[0]);
-          formData.append("email", emailInput.value);
-
-          try {
-            const response = await fetch("http://localhost:3000/upload", {
-              method: "POST",
-              body: formData,
-            });
-            const res = await response.json();
-            if (res.ok) {
-              alert("sent");
-              message.innerHTML = "File sent successfully";
-              message.style.display = "block";
-            } else {
-              alert("unsent");
-              message.innerHTML = "Failed to send file";
-            }
-          } catch (error) {
-            alert("Error:", error);
-          }
-        });
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+.open-sans-app-container {
+  font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.app-container {
+  text-align: center;
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  width: 350px;
+}
+
+.app-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #61dafb;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-file,
+.input-email {
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.input-file::file-selector-button {
+  background: #61dafb;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #000;
+}
+
+.submit-button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #61dafb;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #21a1f1;
+}
+
