@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
@@ -24,38 +23,40 @@ app.get('/', (req, res) => {
   res.send('V-Tech FileSend');
 });
 
-app.post('/upload', upload.single('file'), async (req, res) => {
-  const file = req.file;
+app.post('/upload', upload.array('files', 10), async (req, res) => {
+  const files = req.files;
   const email = req.body.email;
 
-  if (!file || !email) {
-    return res.status(400).json({ error: 'File and email are required.' });
+  if (!files || !email) {
+    return res.status(400).json({ error: 'Files and email are required.' });
   }
 
   try {
+    const attachments = files.map(file => ({
+      filename: file.originalname,
+      path: file.path,
+    }));
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Your uploaded file',
-      text: 'Here is your file.',
-      attachments: [
-        {
-          filename: file.originalname,
-          path: file.path,
-        },
-      ],
+      subject: 'Your uploaded files',
+      text: 'Here are your files.',
+      attachments: attachments,
     };
 
     await transporter.sendMail(mailOptions);
 
-    // Delete the file after sending the email
-    fs.unlink(file.path, (err) => {
-      if (err) {
-        console.error('Failed to delete file:', err);
-      }
+    // Delete the files after sending the email
+    files.forEach(file => {
+      fs.unlink(file.path, (err) => {
+        if (err) {
+          console.error('Failed to delete file:', err);
+        }
+      });
     });
 
-    res.status(200).json({ message: 'File uploaded and email sent.' });
+    res.status(200).json({ message: 'Files uploaded and email sent.' });
   } catch (error) {
     res.status(500).json({ error: 'Error sending email.' });
   }

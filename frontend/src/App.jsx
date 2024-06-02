@@ -3,11 +3,11 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [email, setEmail] = useState('');
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    setFiles(event.target.files);
   };
 
   const handleEmailChange = (event) => {
@@ -18,7 +18,9 @@ function App() {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append('file', file);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
     formData.append('email', email);
 
     try {
@@ -29,7 +31,7 @@ function App() {
       });
 
       alert(response.data.message);
-      setFile(null);
+      setFiles([]);
       setEmail('');
       event.target.reset();
     } catch (error) {
@@ -40,9 +42,15 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="app-title">Upload a File</h1>
+      <h1 className="app-title">Upload Files</h1>
       <form className="upload-form" onSubmit={handleSubmit}>
-        <input type="file" className="input-file" onChange={handleFileChange} required />
+        <input
+          type="file"
+          className="input-file"
+          onChange={handleFileChange}
+          multiple
+          required
+        />
         <input
           type="email"
           className="input-email"
@@ -51,7 +59,7 @@ function App() {
           onChange={handleEmailChange}
           required
         />
-        <button type="submit" className="submit-button">Upload File</button>
+        <button type="submit" className="submit-button">Upload Files</button>
       </form>
     </div>
   );
