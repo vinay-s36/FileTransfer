@@ -6,7 +6,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors('https://v-transfer.vercel.app/'));
 app.use(express.json());
 
 const upload = multer({ dest: 'uploads/' });

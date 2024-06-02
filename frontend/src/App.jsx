@@ -24,7 +24,7 @@ function App() {
     formData.append('email', email);
 
     try {
-      const response = await axios.post('http://localhost:3000/upload', formData, {
+      const response = await axios.post('https://filetransfer-111n.onrender.com/upload/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
