@@ -4,14 +4,14 @@ import './App.css';
 
 function App() {
   const [files, setFiles] = useState([]);
-  const [email, setEmail] = useState('');
+  const [emails, setEmails] = useState('');
 
   const handleFileChange = (event) => {
     setFiles(event.target.files);
   };
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleEmailsChange = (event) => {
+    setEmails(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -21,10 +21,13 @@ function App() {
     for (let i = 0; i < files.length; i++) {
       formData.append('files', files[i]);
     }
-    formData.append('email', email);
+
+    // Convert emails string to an array
+    const emailArray = emails.split(',').map(email => email.trim());
+    formData.append('emails', JSON.stringify(emailArray));
 
     try {
-      const response = await axios.post('https://filetransfer-111n.onrender.com/upload/', formData, {
+      const response = await axios.post('http://localhost:3000/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -32,7 +35,7 @@ function App() {
 
       alert(response.data.message);
       setFiles([]);
-      setEmail('');
+      setEmails('');
       event.target.reset();
     } catch (error) {
       console.error('Error:', error);
@@ -52,11 +55,11 @@ function App() {
           required
         />
         <input
-          type="email"
+          type="text"
           className="input-email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={handleEmailChange}
+          placeholder="Enter email addresses, separated by commas"
+          value={emails}
+          onChange={handleEmailsChange}
           required
         />
         <button type="submit" className="submit-button">Upload Files</button>
