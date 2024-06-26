@@ -26,8 +26,9 @@ app.get('/', (req, res) => {
 app.post('/upload', upload.array('files', 10), async (req, res) => {
   const files = req.files;
   const emails = req.body.emails;
+  const emails1 = JSON.parse(emails);
 
-  if (!files || !emails || !Array.isArray(emails) || emails.length === 0) {
+  if (!files || !emails1 || !Array.isArray(emails1) || emails1.length === 0) {
     return res.status(400).json({ error: 'Files and emails are required.' });
   }
 
@@ -38,7 +39,7 @@ app.post('/upload', upload.array('files', 10), async (req, res) => {
     }));
 
     // Send emails to all addresses in the `emails` array
-    for (const email of emails) {
+    for (const email of emails1) {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
@@ -61,6 +62,7 @@ app.post('/upload', upload.array('files', 10), async (req, res) => {
 
     res.status(200).json({ message: 'Files sent successfully.' });
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: 'Error sending email.' });
   }
 });
