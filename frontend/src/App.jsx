@@ -75,7 +75,7 @@ function App() {
         <input
           type="password"
           className="input-password"
-          placeholder="Enter a password for the zip file"
+          placeholder="File password"
           value={password}
           onChange={handlePasswordChange}
           required

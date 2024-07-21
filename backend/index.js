@@ -58,7 +58,7 @@ app.post('/upload', upload.array('files', 10), async (req, res) => {
           text: 'Here are your files in a password-protected zip archive.',
           attachments: [
             {
-              filename: 'files.zip',
+              filename: `${Date.now()}_files.zip`,
               path: zipPath,
             },
           ],
