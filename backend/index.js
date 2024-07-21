@@ -3,6 +3,9 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const fs = require('fs');
+const archiver = require('archiver');
+const path = require('path');
+const sanitize = require('sanitize-filename');
 require('dotenv').config();
 
 const app = express();
@@ -19,46 +22,93 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+archiver.registerFormat('zip-encryptable', require('archiver-zip-encryptable'));
+
 app.get('/', (req, res) => {
   res.send('V-Tech FileSend');
 });
 
 app.post('/upload', upload.array('files', 10), async (req, res) => {
   const files = req.files;
-  const email = req.body.email;
+  const emails = JSON.parse(req.body.emails);
+  const password = req.body.password;
 
-  if (!files || !email) {
-    return res.status(400).json({ error: 'Files and email are required.' });
+  if (!files || !emails || !Array.isArray(emails) || emails.length === 0 || !password) {
+    return res.status(400).json({ error: 'Files, emails, and password are required.' });
   }
 
   try {
-    const attachments = files.map(file => ({
-      filename: file.originalname,
-      path: file.path,
-    }));
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Your uploaded files',
-      text: 'Here are your files.',
-      attachments: attachments,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    // Delete the files after sending the email
-    files.forEach(file => {
-      fs.unlink(file.path, (err) => {
-        if (err) {
-          console.error('Failed to delete file:', err);
-        }
-      });
+    const zipPath = path.join(__dirname, 'uploads', 'files.zip');
+    const output = fs.createWriteStream(zipPath);
+    const archive = archiver.create('zip-encryptable', {
+      zlib: { level: 9 },
+      encryptionMethod: 'aes256',
+      password: password,
     });
 
-    res.status(200).json({ message: 'Files uploaded and email sent.' });
+    output.on('close', async () => {
+      console.log(`${archive.pointer()} total bytes`);
+      console.log('Archiver has been finalized and the output file descriptor has closed.');
+
+      for (const email of emails) {
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: 'Your uploaded files',
+          text: 'Here are your files in a password-protected zip archive.',
+          attachments: [
+            {
+              filename: `${Date.now()}_files.zip`,
+              path: zipPath,
+            },
+          ],
+        };
+
+        await transporter.sendMail(mailOptions);
+      }
+
+      // Delete the zip file
+      fs.unlink(zipPath, (err) => {
+        if (err) {
+          console.error('Failed to delete zip file:', err);
+        }
+      });
+
+      // Delete the individual uploaded files
+      files.forEach(file => {
+        fs.unlink(file.path, (err) => {
+          if (err) {
+            console.error('Failed to delete file:', err);
+          }
+        });
+      });
+
+      res.status(200).json({ message: 'Files sent successfully.' });
+    });
+
+    archive.on('warning', (err) => {
+      if (err.code === 'ENOENT') {
+        console.warn(err);
+      } else {
+        throw err;
+      }
+    });
+
+    archive.on('error', (err) => {
+      throw err;
+    });
+
+    archive.pipe(output);
+
+    for (const file of files) {
+      const sanitizedFileName = sanitize(file.originalname);
+      archive.file(file.path, { name: sanitizedFileName });
+    }
+
+    archive.finalize();
   } catch (error) {
-    res.status(500).json({ error: 'Error sending email.' });
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Error processing files.' });
   }
 });
 

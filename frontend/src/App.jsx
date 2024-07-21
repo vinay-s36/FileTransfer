@@ -2,16 +2,24 @@ import { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
+// const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'https://filetransfer-111n.onrender.com'
+
 function App() {
   const [files, setFiles] = useState([]);
-  const [email, setEmail] = useState('');
+  const [emails, setEmails] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleFileChange = (event) => {
     setFiles(event.target.files);
   };
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleEmailsChange = (event) => {
+    setEmails(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -21,10 +29,14 @@ function App() {
     for (let i = 0; i < files.length; i++) {
       formData.append('files', files[i]);
     }
-    formData.append('email', email);
+
+    // Convert emails string to an array
+    const emailArray = emails.split(',').map(email => email.trim());
+    formData.append('emails', JSON.stringify(emailArray));
+    formData.append('password', password); // Add the password to the form data
 
     try {
-      const response = await axios.post('http://localhost:3000/upload', formData, {
+      const response = await axios.post(`${BASE_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -32,7 +44,8 @@ function App() {
 
       alert(response.data.message);
       setFiles([]);
-      setEmail('');
+      setEmails('');
+      setPassword('');
       event.target.reset();
     } catch (error) {
       console.error('Error:', error);
@@ -52,11 +65,19 @@ function App() {
           required
         />
         <input
-          type="email"
+          type="text"
           className="input-email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={handleEmailChange}
+          placeholder="Enter email addresses, separated by commas"
+          value={emails}
+          onChange={handleEmailsChange}
+          required
+        />
+        <input
+          type="password"
+          className="input-password"
+          placeholder="File password"
+          value={password}
+          onChange={handlePasswordChange}
           required
         />
         <button type="submit" className="submit-button">Upload Files</button>

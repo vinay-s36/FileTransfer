@@ -41,7 +41,8 @@ body {
 }
 
 .input-file,
-.input-email {
+.input-email,
+.input-password {
   padding: 10px;
   border: 1px solid #555;
   border-radius: 5px;
@@ -74,4 +75,3 @@ body {
 .submit-button:hover {
   background-color: #21a1f1;
 }
-
