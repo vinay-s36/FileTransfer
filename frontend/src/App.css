@@ -75,3 +75,22 @@ body {
 .submit-button:hover {
   background-color: #21a1f1;
 }
+
+.app-header {
+  text-align: center;
+  margin-bottom: 20px; /* Add some space below the header */
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the upload form */
+}
+
+.option-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
