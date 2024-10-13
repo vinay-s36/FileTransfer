@@ -11,6 +11,7 @@ function App() {
   const [password, setPassword] = useState('');
   const [option, setOption] = useState('mail');
   const [shortUrl, setShortUrl] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event) => {
     setFiles(event.target.files);
@@ -30,6 +31,7 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
@@ -43,7 +45,7 @@ function App() {
     }
 
     try {
-      const endpoint = option === 'mail' ? '/upload' : '/upload-file';
+      const endpoint = option === 'mail' ? '/upload/mail' : '/upload/link';
       const response = await axios.post(`${BASE_URL}${endpoint}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -65,6 +67,8 @@ function App() {
     } catch (error) {
       console.error('Error:', error);
       alert('Error occurred. Please try again later.');
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -129,7 +133,7 @@ function App() {
               />
             </>
           )}
-          <button type="submit" className="submit-button">Upload Files</button>
+          <button type="submit" className="submit-button">{loading? 'Uploading...' : 'Upload Files'}</button>
         </form>
         {shortUrl && (
           <div className="short-url-container">
