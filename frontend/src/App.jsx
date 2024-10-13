@@ -2,8 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const BASE_URL = 'http://localhost:3000';
-// const BASE_URL = 'https://filetransfer-111n.onrender.com'
+//const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://filetransfer-111n.onrender.com'
 
 function App() {
   const [files, setFiles] = useState([]);
