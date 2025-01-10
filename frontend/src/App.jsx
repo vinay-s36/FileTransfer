@@ -12,6 +12,11 @@ function App() {
   const [option, setOption] = useState('mail');
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [expiration, setExpiration] = useState('3600');
+
+  const handleExpirationChange = (event) => {
+    setExpiration(event.target.value);
+  }
 
   const handleFileChange = (event) => {
     setFiles(event.target.files);
@@ -42,6 +47,9 @@ function App() {
       const emailArray = emails.split(',').map(email => email.trim());
       formData.append('emails', JSON.stringify(emailArray));
       formData.append('password', password);
+    }
+    else if (option === 'link') {
+      formData.append('expiration', expiration);
     }
 
     try {
@@ -133,7 +141,24 @@ function App() {
               />
             </>
           )}
-          <button type="submit" className="submit-button">{loading? 'Uploading...' : 'Upload Files'}</button>
+          {option === 'link' && (
+          <div className="expiration-container">
+            <label htmlFor="expiration">Link Expiration: </label>
+            <select
+              id="expiration"
+              className="expiration-dropdown"
+              value={expiration}
+              onChange={handleExpirationChange}
+            >
+              <option value="3600">1 Hour</option>
+              <option value="21600">6 Hours</option>
+              <option value="43200">12 Hours</option>
+              <option value="86400">1 Day</option>
+              <option value="259200">3 Days</option>
+            </select>
+          </div>
+        )}
+        <button type="submit" className="submit-button">{loading? 'Uploading...' : 'Upload Files'}</button>
         </form>
         {shortUrl && (
           <div className="short-url-container">
