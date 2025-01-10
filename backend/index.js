@@ -120,6 +120,8 @@ app.post('/upload/mail', upload.array('files', 10), async (req, res) => {
 
 app.post('/upload/link', upload.array('files', 10), async (req, res) => {
   try {
+    const expiration = req.body.expiration;
+    const exp = Number(expiration);
     const filePath = req.files[0].path;
     const fileName = req.files[0].originalname;
     const blob = new Blob([fs.readFileSync(filePath)]);
@@ -129,7 +131,7 @@ app.post('/upload/link', upload.array('files', 10), async (req, res) => {
 
     const longUrl = await pinata.gateways.createSignedURL({
       cid: cid,
-      expires: 3600,
+      expires: exp,
     });
 
     const shortUrl = await TinyURL.shorten(longUrl);
